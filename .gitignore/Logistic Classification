@@ -1,0 +1,49 @@
+둘 중에 하나로 분류하는 Binary Classification을 알아보자.
+이는 대표적으로 스팸메일 분류, sns feed 노출, 신용카드 기존소비 패턴 인식해 도난 여부 확인 등에 쓰인다. 
+악성 종양 여부, 주식 구입 여부 등에도 쓰인다. 
+H(x)=Wx+b로 우리가 주로 regression을 쓰는데 이때 이 H(x)값은 0~1 사이가 아니다. 
+그런데 우리가 내리는 결정은 0 아니면 1이기 때문에 이 사이 값을 받는 것이 판단하기에 편하다. 
+따라서 0<=g(h(x))<=1 인 g함수를 사람들이 많이 찾으려 하였다. 이 함수는 여러가지가 있는데 
+대표적으로 sigmoid함수가 있다. g(z)=1/(1+e^-z)이다. 이를 sigmoid function혹은 logistic function이라 한다. 
+따라서 최종적으로 H(X)=1/(1+e^-WX)로 가설 함수를 만들었다. 
+그런데 원래 우리가 썻던 Cost function은 cost(W,b)=1/m*sigam(H(x)-y)^2의 꼴이었는데 이 함수를 그대로 사용하면
+원래의 매끈한 U자 형이 아니라 매우 구불구불한 U자형이 나오게 된다.
+이는 기존 가설 함수가 선형이라 그를 제곱한 꼴인 cost 함수가 2차 모습을 보이는 것과 비교할 때
+sigmoid 함수는 S거꾸로 모양을 취하고 있기 때문에 거기에 제곱형태로 하면 구불구불해지는 것이다. 
+그런데 이렇게 구불구불하면 local minimum이 도출된다. 따라서 global minimum을 도출하지 못하게 되어 새로운 cost 함수가 필요하다.
+
+따라서 C(H(x),y)=-log(H(x)) :y=1 / -log(1-H(x)) :y=0 을 쓰자.
+먼저 y=1 즉, 실제로 1일때 우리의 가설 함수H(x)가 1이라고 추측을 한다면 log(1)=0으로 손실이 없다는 것을 표현 가능하고
+반대로 0을 도출한다면 -log(0)은 +무한대로 손실이 매우 크다고 표현할 수 있다. 
+이렇게 양쪽 함수를 합치면 우리가 좋아하는 U자형 함수를 도출 할 수 있다. 
+그런데 이는 if 조건이 있어 코딩시 복잡하기 때문에 
+C=-ylog(H(x)) - (1-y)log(1-H(x))으로 하나의 함수로 만든다. 
+이는 우리가 원하는 실제 값y가 0과 1 두가지 밖에 없기 때문에 한 부분이 0이되는 것을 이용한 방법이다. 
+여기서 마지막으로 우리가 m으로 나누면 최종 cost함수가 완성되고 이 부분까지 식으로 써주고 미분식은 tesnsor magic을 이용하여 풀자.
+
+[tensorflow code]
+x_data=[[1,2],[2,3],[3,1]]
+y_data=[[0],[0],[1]]
+x=tf.placeholder(tf.float32,shape=[None,2]) 2pair씩 주기 때문
+y=tf.placeholder(tf.float32,shape=[None,1])
+W=tf.Variable(tf.randaom_normal([2,1]),name='weight')
+b=tf.Varaiable(tf.random_normal([1]),name='bias')
+hypo=tf.sigmoid(tf.matmul(X,W)+b)으로 sigmoid 내장 함수를 쓰면 쉽게 가설함수를 만들수 있다.
+cost=-(-가 붙는 다는 것에 상당히 유의 log함수 밑 부분을 가져왔기 때문)tf.reduce_mean(y*tf.log(hypo)+(1-y)*tf.log(1-hypo))
+train=tf.train.GradientDescentOptimizer(0.01).minimize(cost) #원래 optimizer정의하고 또 minimize한 것을 간략화
+predicted=tf.cast(hypo>0.5,dtype=tf.float32) float으로 cast하면 1.0 혹은 0.0의 결과를 내뱉는다.
+accuracy=tf.reduce_mean(tf.cast(tf.equal(predicted,y),dtype=float32)) #이는 실제 값과 예측값이 같은지를 판단하고 
+다시 한번 float으로 변환한다음에 평균을 취해서 정확도를 분석하는 것이다. 
+
+with tf.Session() as sess:
+   sess.run(tf.global_variables_initalizer())
+   
+   feed={x:x_date, y: y_data}
+   for step in range(10001):
+      sess.run(train,feed_dict=feed)
+      
+   h,c,a=sess.run([hypo,predicted,accuracy],feed_dict=feed)
+   print("\nhypo",h,-,c,-,a)
+
+
+
