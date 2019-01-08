@@ -12,15 +12,43 @@
 그런데 현실에서 우리가 해야하는 작업들은 결코 그렇지 않다. 데이터 가공을 모두
 우리가 직접 해야하고 생각보다 이 부분 역시 많은 공부가 필요한 부분이다. 
 
+데이터를 직접 가공할 때 우리가 고민하고 실행할 부분들에 대해서 적어보자. 
 
-데이터를 다루게 된다면 제일 먼저 생각하게 되는 순서는 아래와 같을 것이다.
+데이터의 경로를 찾는다.이떄 레이블 여부와 테스트,train set 분할 여부 고민.
+데이터의 목록 한 열 마다 데이터를 여는 방법을 정의한다.
+shuffle을 반드시 하고 resize를 하는 등 전처리를 가한 다음 이미지를 불러 온다.
+이 때 전처리를 하기 전에 shuffle을 해야 컴퓨터에 가해지는 부담이 적어진다.
+배치 사이즈를 정해주고, repeat 여부, 미리 next data를 준비해 놓을지 prefetch를 통해 결정한다.
+그 뒤 iterator 객체를 만들어주고 batch 사이즈 하나씩 하나씩 불러오는 x,y를 만든다.
+예제 코드는 다음과 같다.
+dataset = tf.data.Dataset.from_tensor_slices((train_filenames, train_labels))
+# or dataset = tf.data.TFRecordDataset(filenames)
+#dataset = tf.data.Dataset.zip((filename,label))
+dataset = dataset.shuffle(buffer_size=10000)
 
-데이터의 경로를 찾는다.
-데이터의 목록들을 가져오고, 이미지와 레이블을 생각한다.
-목록의 한 열 마다 데이터를 여는 방법을 정의한다.
-shuffle 이든 다양한 옵션을 준다.
-배치로 만들어서 model 넣을 준비를 한다.
 
+def parse_function(filename, label):
+    image_string = tf.read_file(filename)
+    label=tf.cast(label,tf.int32)
+    one_hot = tf.one_hot(label, 153) #Num_classes=153
+    label=tf.reshape(one_hot,[-1,153])
+    # Don't use tf.image.decode_image, or the output shape will be undefined
+    image = tf.image.decode_jpeg(image_string, channels=3)
+
+    # This will convert to float values in [0, 1] or image = tf.cast(image, tf.float32)
+    image = tf.image.convert_image_dtype(image, tf.float32)
+
+    #image = tf.image.resize_images(image, [64, 64])
+    return image, label
+
+
+dataset = dataset.map(parse_function, num_parallel_calls=4)
+dataset = dataset.batch(32)
+dataset = dataset.repeat(15)
+dataset= dataset.prefetch(1)
+iterator = dataset.make_one_shot_iterator()
+
+x,y = iterator.get_next()
 
 추후에는 TFRecord로 텐서플로우에서 가장 효율적인 데이터 형식에 대해서 알아보도록 하겠다. 
 이 부분 역시 학습에 있어 중요한 역할을 하기에 꼭 필요하다. 
