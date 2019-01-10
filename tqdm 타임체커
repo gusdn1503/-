@@ -1,7 +1,7 @@
 오늘은 아주 간단하지만 아주 유용한 tqdm에 대해서 알아보자!
 먼저 설치법은 다음과 같다.
-conda install -c conda -forge tqdm
-
+conda install -c conda-forge tqdm #띄어쓰기 주의!!
+#직접 코드를 돌려보면 어떤 느낌인지 확온다!!!
 from tqdm import tqdm,trange
 from time import sleep
 1.
@@ -20,3 +20,14 @@ bar_total=tqdm_notebook(pbar)
 for char in bar_total:
   sleep(0.5)
   bar_total.set_description('test:%c' % char)
+  
+ 4.
+from tqdm import tnrange
+
+for i in tnrange(4, desc='1st loop'):
+  for j in tnrange(100, desc='2st loop'):
+    sleep(0.1)
+  
+  
+  
+ #더 자세한 설명을 참고하고 싶으면 https://github.com/tqdm/tqdm 
