@@ -1,0 +1,18 @@
+RNN은 Recurrent Neural Network의 약자로 
+Sequence data를 처리하기에 최적화된 NN이라 할 수 있다.
+예를 들어 우리가 
+hi, hello라는 단어를 학습시킨다고 할 때
+같은 h 뒤지만 i, e 두개가 모두 올 수 있기 때문에 
+이를 학습시키려면 전 단어들의 input을 활용하는 방법이 필요하고 그래서 나온 것이 RNN인 것이다. 
+RNN은 굉장히 활용방법이 많은데
+(인풋,아웃풋) 개수가 이러한 flexibility를 주는 원천이다.
+다양한 예제들을 살펴보면
+Language Modeling,sentiment classification(다수,1)speech recognition,
+Machine Translation(다수,다수), Conversation Machine,vidieo classification(다수,다수 단 일대일 대응)
+Image Captioning(1,다수) 등 그 방법이 아주 다양하다.
+
+즉 과거 state h(t-1)과 input x(t)의 두가지 인풋을 가지고 새로운 상태 h(t)를 도출하는 방법이다.
+간단한 식을 써보면
+Ht=tanh(WhhHt-1 + WxhXt)
+Yt=WhyHt이다. 
+추가---
