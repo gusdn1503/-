@@ -15,4 +15,18 @@ Image Captioning(1,다수) 등 그 방법이 아주 다양하다.
 간단한 식을 써보면
 Ht=tanh(WhhHt-1 + WxhXt)
 Yt=WhyHt이다. 
+
+[실습]
+#RNN의 input,output shape는(batch_size,sequence_length,hidden_size)와 같은 식으로 쓴다.
+cell=tf.contrib.rnn.BasicRNNCell(BasicLSTMCell)(num_units=hidden_size)
+#hidden_size:출력의 크기 (1,1,NONE)을 넣으면 (1,1,2)를 출력해줌
+#sequence_length:단어의 길이 처럼 알파벳 몇개를 받을 것인가를 결정
+X_data=np.array([[h,e,l,l,lo]],dtype=np.float32)
+#이때 h=[1,0,0,0]처럼 one-hot encoding하는 식으로 sequence 데이터 표시
+#batch_size:단어의 개수처럼 한번에 줄 데이터의 개수
+outputs,_states=tf.nn.dynamic_rnn
+
+
 추가---
+
+
