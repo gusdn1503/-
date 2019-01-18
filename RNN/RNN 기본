@@ -17,14 +17,23 @@ Ht=tanh(WhhHt-1 + WxhXt)
 Yt=WhyHt이다. 
 
 [실습]
+#RNN을 쓸때는 먼저 text를 unique char로 바꾸고 이를 one hot encoding해줘야하는 점을 기억하자
 #RNN의 input,output shape는(batch_size,sequence_length,hidden_size)와 같은 식으로 쓴다.
-cell=tf.contrib.rnn.BasicRNNCell(BasicLSTMCell)(num_units=hidden_size)
-#hidden_size:출력의 크기 (1,1,NONE)을 넣으면 (1,1,2)를 출력해줌
-#sequence_length:단어의 길이 처럼 알파벳 몇개를 받을 것인가를 결정
-X_data=np.array([[h,e,l,l,lo]],dtype=np.float32)
-#이때 h=[1,0,0,0]처럼 one-hot encoding하는 식으로 sequence 데이터 표시
 #batch_size:단어의 개수처럼 한번에 줄 데이터의 개수
-outputs,_states=tf.nn.dynamic_rnn
+#sequence_length:단어의 길이 처럼 알파벳 몇개를 받을 것인가를 결정
+#hidden_size:출력의 크기 (1,1,NONE)을 넣으면 (1,1,2)를 출력해줌
+
+X_data=np.array([[h,e,l,l,lo]],dtype=np.float32) #이때 h=[1,0,0,0]처럼 one-hot encoding하는 식으로 sequence 데이터 표시
+x=tf.placeholder(tf.float32,[None,sequence_length,input_dim]) #알파벳수와 구별해야하는 unique char수
+y=tf.placeholder(tf.int32,[None,sequence_length])
+cell=tf.contrib.rnn.BasicRNNCell(or BasicLSTMCell)(num_units=hidden_size)
+initial_state=cell.zero_stat(batch_sie,tf.float32)
+outputs,_states=tf.nn.dynamic_rnn(cell,x,initial_state=initial_stae,dtype=tf.float32)
+predictions=tf.constant([[[0.3,0.7],[,],[,]]],dtype=float32)
+weigths=tf.ones([batch_size,sequence_length])
+
+seqeunce_loss=tf.contrib.seq2seq.sequence_loss(logits=prediction,targets=y_data,weights=weights)
+sess.run(tf.global_variables_initializer())
 
 
 추가---
