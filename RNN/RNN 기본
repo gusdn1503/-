@@ -29,11 +29,16 @@ y=tf.placeholder(tf.int32,[None,sequence_length])
 cell=tf.contrib.rnn.BasicRNNCell(or BasicLSTMCell)(num_units=hidden_size)
 initial_state=cell.zero_stat(batch_sie,tf.float32)
 outputs,_states=tf.nn.dynamic_rnn(cell,x,initial_state=initial_stae,dtype=tf.float32)
-predictions=tf.constant([[[0.3,0.7],[,],[,]]],dtype=float32)
+#predictions=tf.constant([[[0.3,0.7],[,],[,]]],dtype=float32)
 weigths=tf.ones([batch_size,sequence_length])
 
 seqeunce_loss=tf.contrib.seq2seq.sequence_loss(logits=prediction,targets=y_data,weights=weights)
-sess.run(tf.global_variables_initializer())
+loss=tf.reduce_mean(sequence_loss) #rnn에 나오는 것을 바로 logit에 넣으면 사실 안좋다.
+train=tf.train.AdamOptimizer(0.1).minimize(loss)
+prediction=tf.argmax(outputs,axis=2)
+with tf.Session() as sess:
+  sess.run(tf.global_variables_initializer())
+
 
 
 추가---
