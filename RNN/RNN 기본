@@ -44,7 +44,21 @@ prediction=tf.argmax(outputs,axis=2)
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
 
+#cf better data creation
+sample= "if you want you"
+idx2char=list(set(sample)) #각 알파벳 한번 씩 나오는 리스트
+char2idx={c:i for i,c in enumerate(idx2char)} #케릭터:숫자의 딕셔너리
+sample_idx=[char2idx[c] for c in sample]
+x_data=[sample_ix[:-1]]
+y_data=[sample_idx[1:]]  #x는 제일처음부터 하나전까지 y는 둘째부터 제일 끝까지의 문자
+x=tf.placeholder(tf.int32,[None,sequence_length])
 
+x_one_hot=tf.one_hot(x,num_classes) # unique 문자열의 개수, 이때 dimension 조절 해야함
+dic_size=len(char2idx) #RNN input size
+rnn_hidden_size=len(char2idx) # rnn output size
+num_classes=len(char2idx) # final output size
+batch_size=1
+sequence_length=len(sample)-1  #임의로 정해줄 수 있다
 
 추가---
 
