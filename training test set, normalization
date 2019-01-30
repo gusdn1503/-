@@ -32,5 +32,7 @@ regularization은 각 weight간의 격차를 줄이자는 의미로도 이해할
 이 항을 더하면 각 weight가 커질수록 loss역시 커지고 weight가 작을수록 loss역시 작아지기 때문에
 일반적으로 cost를 최적화하는 weight를 찾는 것 외에 weight를 작게 하려는 압력이 들어옵니다. 
 따라서 각 weight 간 격차가 줄어들 것입니다.
+
 http://cs231n.github.io/assets/nn1/reg_strengths.jpeg
+
 이 페이지를 참조해보자..! lambda에 따른 변화를 알 수 있다. 
